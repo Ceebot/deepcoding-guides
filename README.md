@@ -79,7 +79,6 @@ docs/ai-workflows.md
 
 - [Cursor: Best practices for coding with agents](https://cursor.com/blog/agent-best-practices)
 - [Anthropic: Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
-- [DORA: State of AI-assisted Software Development](https://dora.dev/dora-report-2025/)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 - Официальная документация Cursor, Claude Code и Codex.
 
