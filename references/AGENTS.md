@@ -43,7 +43,7 @@
 - [pagination-load-more/SKILL.md](../skills/pagination-load-more/SKILL.md) — паттерн async-подгрузки списков
   с кнопкой «Загрузить ещё» через `LoadMoreManager`/`Paginator`
 
-### Функции
+### Features
 - [animal-type-switching.mdc](./animal-type-switching.mdc) — переключение видов животных (PORK/POULTRY), роуты, guard, sidenav
 - [symfony-bundles](../skills/symfony-bundles/SKILL.md) — структура и работа внутренних Symfony-бандлов
 - [date-timezone-flow.mdc](./date-timezone-flow.mdc) — работа с датами и временными зонами
