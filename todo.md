@@ -26,12 +26,11 @@
 - [x] Прогнать тесты схемы
 
 ## Блок 3: Миграции
-- [ ] `project/migrations/001_create_tables.sql` — CREATE TABLE всех таблиц
-- [ ] `project/migrations/002_add_indexes.sql` — добавление индексов
-- [ ] `project/migrations/003_seed_services.sql` — справочник услуг
-- [ ] `project/migrations/004_example_alter.sql` — пример изменения схемы (добавление статуса/поля)
-- [ ] Тесты миграций (`project/tests/test_migrations.py`): применение на пустую БД, откат, идемпотентность
-- [ ] Прогнать тесты миграций
+- [x] `project/migrations/001_create_tables.sql` — CREATE TABLE всех таблиц
+- [x] `project/migrations/002_add_indexes.sql` — добавление индексов
+- [x] `project/migrations/003_example_alter.sql` — пример изменения схемы (eSIM: поля sim_type/eid, статус qr_generated)
+- [x] Тесты миграций (`project/tests/test_migrations.py`): применение на пустую БД, откат, идемпотентность
+- [x] Прогнать тесты миграций
 
 ## Блок 4: Seed-данные
 - [ ] `project/seeds/seed.sql` — вымышленные данные:
