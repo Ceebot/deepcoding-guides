@@ -44,8 +44,8 @@ def apply_migrations(conn, migrations_dir=MIGRATIONS_DIR):
     if not pending:
         return []
 
-    # FK отключаем на время батча: это требование безопасного перестроения
-    # sim_cards в 003 (DROP/RENAME) и одновременно глушит проверки FK при seed.
+    # FK отключаем на время батча: нужно для миграций с перестроением таблиц
+    # (DROP/RENAME) и заодно глушит проверки FK при seed.
     conn.execute("PRAGMA foreign_keys=OFF")
     try:
         for path in pending:

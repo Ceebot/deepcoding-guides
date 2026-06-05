@@ -28,7 +28,7 @@
 ## Блок 3: Миграции
 - [x] `project/migrations/001_create_tables.sql` — CREATE TABLE всех таблиц
 - [x] `project/migrations/002_add_indexes.sql` — добавление индексов
-- [x] `project/migrations/003_example_alter.sql` — пример изменения схемы (eSIM: поля sim_type/eid, статус qr_generated)
+- [ ] `project/migrations/003_example_alter.sql` — пример изменения схемы (eSIM); создаётся вживую на лекции из Word-требования
 - [x] Тесты миграций (`project/tests/test_migrations.py`): применение на пустую БД, откат, идемпотентность
 - [x] Прогнать тесты миграций
 

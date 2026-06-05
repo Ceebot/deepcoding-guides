@@ -1,0 +1,12 @@
+2026-06-05 10:21:03 INFO  seed import started (db=telecom.db)
+2026-06-05 10:21:03 INFO  loading services from услуги-тарифы-2026.xlsx
+2026-06-05 10:21:03 WARN  services row 12 'Антиопределитель': unknown type '' -> row skipped
+2026-06-05 10:21:03 WARN  services row 13 'Интернет 5 ГБ (акция)': empty cost -> row skipped
+2026-06-05 10:21:03 INFO  services loaded: 14 of 16
+2026-06-05 10:21:03 INFO  loading clients from импорт-юрлиц.csv
+2026-06-05 10:21:03 ERROR clients row 4 'ЗАО "Глобал"': CHECK constraint failed: length(inn) IN (10, 12)
+2026-06-05 10:21:03 ERROR transaction aborted, rolling back
+2026-06-05 10:21:03 ERROR sim_cards import skipped (depends on clients)
+2026-06-05 10:21:03 ERROR payments import skipped (depends on clients)
+2026-06-05 10:21:03 INFO  rollback complete, 0 rows committed
+2026-06-05 10:21:03 FATAL seed import failed (exit code 1)

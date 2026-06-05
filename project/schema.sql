@@ -38,15 +38,20 @@ CREATE TABLE sim_cards (
     id INTEGER PRIMARY KEY,
     iccid TEXT NOT NULL UNIQUE,
     phone_number TEXT NOT NULL UNIQUE,
+    sim_type TEXT NOT NULL DEFAULT 'physical'
+        CHECK (sim_type IN ('physical', 'esim')),
+    eid TEXT
+        CHECK (eid IS NULL OR (length(eid) = 32 AND eid NOT GLOB '*[^0-9]*')),
     status TEXT NOT NULL DEFAULT 'available'
-        CHECK (status IN ('available', 'reserved', 'active', 'blocked', 'lost')),
+        CHECK (status IN ('available', 'reserved', 'active', 'blocked', 'lost', 'qr_generated')),
     issued_at TEXT NOT NULL DEFAULT (date('now')),
     activated_at TEXT,
     client_id INTEGER,
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL,
     CHECK (date(issued_at) IS NOT NULL),
     CHECK (activated_at IS NULL OR date(activated_at) IS NOT NULL),
-    CHECK (activated_at IS NULL OR activated_at >= issued_at)
+    CHECK (activated_at IS NULL OR activated_at >= issued_at),
+    CHECK (sim_type <> 'physical' OR eid IS NULL)
 );
 
 CREATE TABLE services (
@@ -186,6 +191,7 @@ END;
 
 CREATE INDEX idx_clients_status ON clients(status);
 CREATE INDEX idx_sim_cards_client_status ON sim_cards(client_id, status);
+CREATE UNIQUE INDEX uq_sim_cards_eid ON sim_cards(eid) WHERE eid IS NOT NULL;
 CREATE INDEX idx_services_type_status ON services(type, status);
 CREATE UNIQUE INDEX uq_active_sim_card_service
     ON sim_card_services(sim_card_id, service_id)

@@ -19,6 +19,7 @@ EXPECTED_INDEXES = {
     "uq_active_sim_card_service", "idx_sim_card_services_service_status",
     "idx_payments_client_status_created", "idx_payments_sim_card_id",
     "idx_articles_category_status", "idx_article_services_service_id",
+    "uq_sim_cards_eid",
 }
 
 
@@ -53,18 +54,13 @@ def _history(conn):
 
 def test_migrations_build_empty_db(empty_db):
     applied = apply_migrations(empty_db, MIGRATIONS_DIR)
-    assert applied == ["001_create_tables", "002_add_indexes", "003_example_alter"]
+    assert applied == ["001_create_tables", "002_add_indexes", "003_add_esim_support"]
 
     assert EXPECTED_TABLES <= _tables(empty_db)
     assert EXPECTED_INDEXES <= _indexes(empty_db)
 
-    # 003: новые колонки и расширенный статус
+    # 003: поддержка eSIM — новые поля в sim_cards.
     assert {"sim_type", "eid"} <= _columns(empty_db, "sim_cards")
-    empty_db.execute(
-        "INSERT INTO sim_cards (iccid, phone_number, status, sim_type, eid) "
-        "VALUES ('8970100000000009999', '+79990009999', 'qr_generated', 'esim', "
-        "'89000000000000000000000000000001')"
-    )
 
     # Миграции создают пустую таблицу services; наполнение — сидами (Блок 4).
     assert _columns(empty_db, "services")
