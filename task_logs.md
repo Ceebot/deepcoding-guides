@@ -1,5 +1,9 @@
 # Task Logs
 
+## 2026-06-08
+
+- Реализован блок 4: `seed.sql` заменён на полный идемпотентный набор вымышленных данных (клиенты, SIM-карты в разных статусах, 8 услуг, подключения, платежи и статьи базы знаний). Добавлен `test_seed.py`, который проверяет повторную загрузку без дублей, ожидаемые количества записей и наличие ключевых статусов SIM-карт/платежей.
+
 ## 2026-06-05
 
 - По Word-требованию CR-2026-014 создана миграция `003_add_esim_support.sql`: поддержка eSIM в `sim_cards` — поля `sim_type` ('physical'/'esim', default 'physical'), `eid` (32 цифры, UNIQUE среди eSIM через partial-индекс, NULL у физических) и статус `qr_generated`. Расширить CHECK статуса в SQLite через ALTER нельзя, поэтому таблица безопасно пересобирается (create→copy→drop→rename) с `legacy_alter_table=ON` вокруг RENAME (иначе ломается о триггер payments, ссылающийся на sim_cards). Данные не теряются, UNIQUE на iccid/phone сохранены, триггер `trg_sim_cards_client_update` пересоздан. `schema.sql` синхронизирован, `test_migrations.py` обновлён — 3 passed.

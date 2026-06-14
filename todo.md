@@ -33,7 +33,7 @@
 - [x] Прогнать тесты миграций
 
 ## Блок 4: Seed-данные
-- [ ] `project/seeds/seed.sql` — вымышленные данные:
+- [x] `project/seeds/seed.sql` — вымышленные данные:
   - 3-5 физических лиц
   - 2-3 юридических лица
   - ~10 SIM-карт (available, reserved, active, blocked, lost)
@@ -41,8 +41,8 @@
   - Подключенные услуги к SIM-картам
   - 5-10 платежей (pending, paid, failed, refunded)
   - 3-5 статей базы знаний
-- [ ] Тест seed (`project/tests/test_seed.py`): повторяемая загрузка без ошибок, ожидаемое число записей
-- [ ] Прогнать тест seed
+- [x] Тест seed (`project/tests/test_seed.py`): повторяемая загрузка без ошибок, ожидаемое число записей
+- [x] Прогнать тест seed
 
 ## Блок 5: Скрипты автоматизации
 - [ ] `project/scripts/manage_db.py` — Python-скрипт управления БД:
