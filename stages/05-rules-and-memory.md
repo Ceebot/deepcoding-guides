@@ -26,8 +26,6 @@
 
 Практичный подход: держать в always-правилах только короткие базовые ограничения, а длинные архитектурные инструкции выносить в подключаемые `.mdc`-файлы.
 
-Примеры реальных правил Cursor лежат в `references/.cursor/rules`.
-
 ## Что можно писать в правилах
 
 - Стек проекта.
@@ -63,7 +61,7 @@
 - `src/ui` - React components.
 ```
 
-Пример `AGENTS.md` из реального проекта: [AGENTS.md](../references/AGENTS.md)
+Пример `AGENTS.md` этого проекта: [AGENTS.md](../AGENTS.md)
 
 ## История изменений проекта `task-logs.md` и зачем он нужен
 
@@ -78,9 +76,9 @@
 - Risk: timezone formatting still needs manual check.
 ```
 
-Для автоматического добавления `task-logs.md` в контекст можно явно об этом попросить в `AGENTS.md` либо других файлах документации (пример из реального проекта: [AGENTS.md](../references/AGENTS.md))
+Для автоматического добавления `task-logs.md` в контекст можно явно об этом попросить в `AGENTS.md` либо других файлах документации (пример: [AGENTS.md](../AGENTS.md))
 
-Пример `task-logs.md` из реального проекта: [task-logs.md](../references/task_logs.md)
+Пример `task-logs.md` этого проекта: [task_logs.md](../task_logs.md)
 
 ## Проблема раздутого `task-logs.md`
 
