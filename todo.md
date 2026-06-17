@@ -45,16 +45,16 @@
 - [x] Прогнать тест seed
 
 ## Блок 5: Скрипты автоматизации
-- [ ] `project/scripts/manage_db.py` — Python-скрипт управления БД:
+- [x] `project/scripts/manage_db.py` — Python-скрипт управления БД:
   - Команда `migrate` — применение миграций по порядку
   - Команда `rollback` — откат последней миграции
   - Команда `seed` — заполнение seed-данными
   - Команда `reset` — сброс БД (удаление + создание + миграции + seed)
   - Команда `check` — smoke-тесты (проверка наличия таблиц, записей, ограничений)
-- [ ] Дополнить `Makefile` вызовами `python scripts/manage_db.py <command>`
-- [ ] Тесты команд `manage_db.py` (`project/tests/test_manage_db.py`): migrate, rollback, seed, reset, check
-- [ ] Добавить в `Makefile` цель `test` (запуск `pytest`)
-- [ ] Прогнать все тесты (`make test`)
+- [x] Дополнить `Makefile` вызовами `python scripts/manage_db.py <command>`
+- [x] Тесты команд `manage_db.py` (`project/tests/test_manage_db.py`): migrate, rollback, seed, reset, check
+- [x] Добавить в `Makefile` цель `test` (запуск `pytest`)
+- [x] Прогнать все тесты (`make test`)
 
 ## Блок 6: Документация
 - [ ] `project/README.md` — что делает проект, быстрый старт

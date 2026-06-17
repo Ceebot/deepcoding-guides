@@ -2,6 +2,7 @@
 
 ## 2026-06-16
 
+- Реализован блок 5: добавлен CLI управления SQLite-БД с миграциями, rollback через down-файлы, seed/reset/check, Makefile-обвязка и тесты команд.
 - Добавлен бизнес-запрос «SIM-карты без активных услуг»: `queries/sim-cards-without-active-services.sql` (NOT EXISTS по `sim_card_services.status = 'active'`, без фильтра по статусу карты) и тест `test_queries.py` на seed (ожидаются id 3, 4, 5, 6, 8, 9).
 
 ## 2026-06-08
