@@ -2,7 +2,7 @@
 name: sim-card-feature-workflow
 description: >
   Учебный skill для разработки задач в тестовом проекте SIM-карт внутри project/.
-  Использовать при добавлении фич, ми/suграций, seed-данных и проверок по ТЗ project/telecom-sim-cards-spec.md.
+  Использовать при добавлении фич, миграций, seed-данных и проверок по ТЗ project/telecom-sim-cards-spec.md.
 ---
 
 # SIM Card Feature Workflow
