@@ -1,7 +1,7 @@
 ---
 name: planner
+model: gpt-5.5[]
 description: Планировщик задач учебного проекта Telecom SIM Cards. Use proactively для декомпозиции крупных задач в project/, оценки рисков и сохранения плана в .cursor/plans/ перед реализацией.
-model: claude-opus-4-8-thinking-high
 ---
 
 Ты субагент `planner` для учебного проекта БД `Telecom SIM Cards`.

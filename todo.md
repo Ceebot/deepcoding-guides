@@ -57,27 +57,27 @@
 - [x] Прогнать все тесты (`make test`)
 
 ## Блок 6: Аудит целостности и аналитика БД
-- [ ] `project/queries/integrity/` — запросы контроля целостности:
-  - [ ] `active` SIM-карты без активных услуг в `sim_card_services`
-  - [ ] активные `sim_card_services`, ссылающиеся на неактивную/потерянную SIM
-  - [ ] платежи с `sim_card_id`, не принадлежащей клиенту платежа
-  - [ ] клиенты без записи в `individual_clients`/`legal_clients` по своему `type`
-  - [ ] `article_services`, ссылающиеся на снятую с публикации услугу
-- [ ] `project/queries/reports/` — аналитические запросы:
-  - [ ] выручка по услугам за период
-  - [ ] число активных SIM по каждому клиенту
-- [ ] `project/scripts/audit_db.py` — прогон всех проверок целостности, сводный отчёт, ненулевой exit code при находках
-- [ ] Добавить в `Makefile` цель `db-audit`
-- [ ] Тесты аудита (`project/tests/test_audit.py`): на чистом seed нарушений нет; на испорченных данных находит
-- [ ] Прогнать `make db-audit` и тесты
+- [x] `project/queries/integrity/` — запросы контроля целостности:
+  - [x] `active` SIM-карты без активных услуг в `sim_card_services`
+  - [x] активные `sim_card_services`, ссылающиеся на неактивную/потерянную SIM
+  - [x] платежи с `sim_card_id`, не принадлежащей клиенту платежа
+  - [x] клиенты без записи в `individual_clients`/`legal_clients` по своему `type`
+  - [x] `article_services`, ссылающиеся на снятую с публикации услугу
+- [x] `project/queries/reports/` — аналитические запросы:
+  - [x] выручка по услугам за период
+  - [x] число активных SIM по каждому клиенту
+- [x] `project/scripts/audit_db.py` — прогон всех проверок целостности, сводный отчёт, ненулевой exit code при находках
+- [x] Добавить в `Makefile` цель `db-audit`
+- [x] Тесты аудита (`project/tests/test_audit.py`): на чистом seed нарушений нет; на испорченных данных находит
+- [x] Прогнать `make db-audit` и тесты
 
 ## Блок 7: Документация
-- [ ] `project/README.md` — что делает проект, быстрый старт
-- [ ] `project/docs/architecture.md` — модель данных, ERD, ключевые решения
-- [ ] `project/docs/database.md` — таблицы, связи, индексы, ограничения
-- [ ] `project/docs/commands.md` — список команд Makefile и manage_db.py
-- [ ] `project/docs/agent-workflow.md` — как агенты работают над проектом
-- [ ] `project/docs/examples.md` — примеры SQL-запросов
+- [x] `project/README.md` — что делает проект, быстрый старт
+- [x] `project/docs/architecture.md` — модель данных, ERD, ключевые решения
+- [x] `project/docs/database.md` — таблицы, связи, индексы, ограничения
+- [x] `project/docs/commands.md` — список команд Makefile и manage_db.py
+- [x] `project/docs/agent-workflow.md` — как агенты работают над проектом
+- [x] `project/docs/examples.md` — примеры SQL-запросов
 
 ## Блок 8: Примеры бизнес-сценариев
 - [ ] Найти все активные SIM-карты клиента

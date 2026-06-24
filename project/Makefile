@@ -2,7 +2,7 @@ PYTHON ?= python3
 DB     ?= data/telecom.db
 CLI    := scripts/manage_db.py
 
-.PHONY: db-create db-migrate db-seed db-rollback db-reset db-check test help
+.PHONY: db-create db-migrate db-seed db-rollback db-reset db-check db-audit test help
 
 help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -25,6 +25,9 @@ db-reset: ## Сбросить БД и загрузить seed
 
 db-check: ## Smoke-проверка БД
 	$(PYTHON) $(CLI) --db $(DB) check
+
+db-audit: ## Аудит целостности БД
+	$(PYTHON) scripts/audit_db.py --db $(DB)
 
 test: ## Запустить pytest
 	$(PYTHON) -m pytest

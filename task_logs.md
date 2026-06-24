@@ -1,5 +1,11 @@
 # Task Logs
 
+## 2026-06-18
+
+- Блоки 6–7: SQL-аудит целостности (`queries/integrity/`), отчёты (`queries/reports/`), скрипт `audit_db.py`, цель `make db-audit`, тесты `test_audit.py`, документация в `project/README.md` и `project/docs/`.
+- Усилены тесты аудита: парсинг счётчиков по каждой проверке, exit code 1 на испорченной/отсутствующей БД, read-only SELECT для integrity SQL.
+- Документация: в `erd.md` добавлены `sim_type`/`eid`; в `examples.md` уточнено учебное допущение отчёта выручки (интервал подключения, без `status`).
+
 ## 2026-06-16
 
 - Реализован блок 5: добавлен CLI управления SQLite-БД с миграциями, rollback через down-файлы, seed/reset/check, Makefile-обвязка и тесты команд.

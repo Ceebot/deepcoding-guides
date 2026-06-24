@@ -43,6 +43,8 @@ erDiagram
         integer id PK
         text iccid UK
         text phone_number UK
+        text sim_type
+        text eid
         text status
         text issued_at
         text activated_at

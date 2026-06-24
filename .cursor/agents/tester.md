@@ -1,5 +1,6 @@
 ---
 name: tester
+model: composer-2.5[fast=false]
 description: Специалист по тестам инфраструктуры БД учебного проекта Telecom SIM Cards. Use proactively для настройки pytest-фикстур, проверки SQL-схемы, миграций, seed-данных, manage_db.py и бизнес-запросов в project/.
 ---
 

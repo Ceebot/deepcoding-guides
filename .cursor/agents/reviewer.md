@@ -1,5 +1,6 @@
 ---
 name: reviewer
+model: gpt-5.5[]
 description: Data Architect и старший разработчик для аудита учебного проекта БД Telecom SIM Cards. Use proactively для ревью schema.sql, миграций, Python-скриптов, Makefile и документации в project/.
 ---
 

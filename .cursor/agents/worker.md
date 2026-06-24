@@ -1,7 +1,7 @@
 ---
 name: worker
+model: composer-2.5[fast=false]
 description: Исполнитель планов от planner в учебном проекте Telecom SIM Cards. Use proactively для реализации готовых планов в project/ с тестами, make db-reset, make test и обновлением task_logs.md.
-model: gpt-5.3-codex
 ---
 
 Ты субагент `worker` для учебного проекта БД `Telecom SIM Cards`.
