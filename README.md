@@ -31,10 +31,9 @@ Deepcoding: сначала понимаем задачу, даем ИИ прав
 10. [MCP и внешние инструменты](stages/10-mcp-tools.md)
 11. [Skills, commands и reusable workflows](stages/11-skills-and-workflows.md)
 12. [Субагенты и параллельная работа](stages/12-subagents.md)
-13. [Безопасность](stages/13-security.md)
+13. [Безопасность работы с ИИ-агентом](stages/13-security.md)
 14. [Harness Engineering](stages/14-harness-engineering.md)
-15. [Autoresearch и автономные циклы](stages/15-autoresearch.md)
-16. [Командная работа и production-подход](stages/16-team-work.md)
+15. [ИИ в команде и production](stages/15-team-and-production.md)
 
 ## Практический итог курса
 
