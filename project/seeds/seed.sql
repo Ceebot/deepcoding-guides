@@ -1,15 +1,17 @@
 -- seed.sql — вымышленные демонстрационные данные для локальной БД.
 -- INSERT OR IGNORE делает повторную загрузку безопасной.
 
-INSERT OR IGNORE INTO clients (id, type, name, phone, email, registered_at, status) VALUES
-(1, 'individual', 'Иван Петров', '+79000000001', 'ivan.petrov@example.test', '2026-01-10 10:00:00', 'active'),
-(2, 'individual', 'Мария Соколова', '+79000000002', 'maria.sokolova@example.test', '2026-01-11 10:00:00', 'active'),
-(3, 'individual', 'Алексей Морозов', '+79000000003', 'alexey.morozov@example.test', '2026-01-12 10:00:00', 'blocked'),
-(4, 'individual', 'Ольга Кузнецова', '+79000000004', 'olga.kuznetsova@example.test', '2026-01-13 10:00:00', 'active'),
-(5, 'individual', 'Дмитрий Волков', '+79000000005', 'dmitry.volkov@example.test', '2026-01-14 10:00:00', 'archived'),
-(6, 'legal', 'ООО Альфа Связь', '+79000000006', 'office@alpha-svyaz.example.test', '2026-01-15 10:00:00', 'active'),
-(7, 'legal', 'АО Север Телеком', '+79000000007', 'info@sever-telecom.example.test', '2026-01-16 10:00:00', 'active'),
-(8, 'legal', 'ИП Романов Петр', '+79000000008', 'romanov@example.test', '2026-01-17 10:00:00', 'blocked');
+INSERT OR IGNORE INTO clients
+    (id, type, name, phone, email, registered_at, status, preferred_channel)
+VALUES
+(1, 'individual', 'Иван Петров', '+79000000001', 'ivan.petrov@example.test', '2026-01-10 10:00:00', 'active', 'email'),
+(2, 'individual', 'Мария Соколова', '+79000000002', 'maria.sokolova@example.test', '2026-01-11 10:00:00', 'active', 'sms'),
+(3, 'individual', 'Алексей Морозов', '+79000000003', 'alexey.morozov@example.test', '2026-01-12 10:00:00', 'blocked', 'sms'),
+(4, 'individual', 'Ольга Кузнецова', '+79000000004', 'olga.kuznetsova@example.test', '2026-01-13 10:00:00', 'active', 'push'),
+(5, 'individual', 'Дмитрий Волков', '+79000000005', 'dmitry.volkov@example.test', '2026-01-14 10:00:00', 'archived', 'email'),
+(6, 'legal', 'ООО Альфа Связь', '+79000000006', 'office@alpha-svyaz.example.test', '2026-01-15 10:00:00', 'active', 'email'),
+(7, 'legal', 'АО Север Телеком', '+79000000007', 'info@sever-telecom.example.test', '2026-01-16 10:00:00', 'active', 'push'),
+(8, 'legal', 'ИП Романов Петр', '+79000000008', 'romanov@example.test', '2026-01-17 10:00:00', 'blocked', 'sms');
 
 INSERT OR IGNORE INTO individual_clients
     (client_id, last_name, first_name, middle_name, birth_date, passport_data)

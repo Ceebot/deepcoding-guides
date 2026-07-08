@@ -1,5 +1,14 @@
 # Task Logs
 
+## 2026-07-08
+
+- Добавлен черновик `project/drafts/005_cleanup_test_payments.sql` (не входит в `migrations/`, только для локального ревью, `make db-migrate` его не подхватывает).
+
+## 2026-07-07
+
+- Реализован CR-2026-031: миграция `004_add_preferred_channel.sql` — поле `clients.preferred_channel` (`email`/`sms`/`push`, default `email`) через ALTER без пересоздания таблицы; `schema.sql`, seed с примерами каналов, тесты миграций/сида/CHECK.
+- Добавлен документ `project/files/requirements/change-request-notification-channel.docx` (запрос на поле `preferred_channel` у клиента). Настоящий `change-request-esim.docx` (пример для этапа 9) не трогали.
+
 ## 2026-06-18
 
 - Блоки 6–7: SQL-аудит целостности (`queries/integrity/`), отчёты (`queries/reports/`), скрипт `audit_db.py`, цель `make db-audit`, тесты `test_audit.py`, документация в `project/README.md` и `project/docs/`.

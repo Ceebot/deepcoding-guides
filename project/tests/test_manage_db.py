@@ -48,6 +48,7 @@ def test_migrate_builds_schema_and_is_idempotent(tmp_path):
         "001_create_tables",
         "002_add_indexes",
         "003_add_esim_support",
+        "004_add_preferred_channel",
     ]
     assert count_rows(db_path, "services") == 0
 
@@ -59,9 +60,13 @@ def test_rollback_reverts_last_migration(tmp_path):
     result = run_cli(db_path, "rollback")
 
     assert result.returncode == 0, result.stderr
-    assert history(db_path) == ["001_create_tables", "002_add_indexes"]
-    assert "sim_type" not in columns(db_path, "sim_cards")
-    assert "eid" not in columns(db_path, "sim_cards")
+    assert history(db_path) == [
+        "001_create_tables",
+        "002_add_indexes",
+        "003_add_esim_support",
+    ]
+    assert "preferred_channel" not in columns(db_path, "clients")
+    assert {"sim_type", "eid"} <= columns(db_path, "sim_cards")
 
 
 def test_seed_loads_repeatably_after_migrations(tmp_path):
@@ -90,6 +95,7 @@ def test_reset_recreates_database_with_seed_data(tmp_path):
         "001_create_tables",
         "002_add_indexes",
         "003_add_esim_support",
+        "004_add_preferred_channel",
     ]
 
 

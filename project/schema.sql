@@ -8,7 +8,9 @@ CREATE TABLE clients (
     email TEXT NOT NULL UNIQUE,
     registered_at TEXT NOT NULL DEFAULT (datetime('now')),
     status TEXT NOT NULL DEFAULT 'active'
-        CHECK (status IN ('active', 'blocked', 'archived'))
+        CHECK (status IN ('active', 'blocked', 'archived')),
+    preferred_channel TEXT NOT NULL DEFAULT 'email'
+        CHECK (preferred_channel IN ('email', 'sms', 'push'))
 );
 
 CREATE TABLE individual_clients (

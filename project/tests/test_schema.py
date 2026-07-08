@@ -361,6 +361,14 @@ def test_check_constraints_are_enforced(db):
     with pytest.raises(sqlite3.IntegrityError):
         db.execute(
             """
+            INSERT INTO clients (type, name, phone, email, preferred_channel)
+            VALUES ('individual', 'Канал Тест', '+79990000012', 'channel@example.test', 'telegram')
+            """
+        )
+
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute(
+            """
             INSERT INTO individual_clients
                 (client_id, last_name, first_name, birth_date, passport_data)
             VALUES (?, 'Иванов', 'Иван', 'not-a-date', 'demo')

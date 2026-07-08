@@ -54,13 +54,30 @@ def _history(conn):
 
 def test_migrations_build_empty_db(empty_db):
     applied = apply_migrations(empty_db, MIGRATIONS_DIR)
-    assert applied == ["001_create_tables", "002_add_indexes", "003_add_esim_support"]
+    assert applied == [
+        "001_create_tables",
+        "002_add_indexes",
+        "003_add_esim_support",
+        "004_add_preferred_channel",
+    ]
 
     assert EXPECTED_TABLES <= _tables(empty_db)
     assert EXPECTED_INDEXES <= _indexes(empty_db)
 
     # 003: поддержка eSIM — новые поля в sim_cards.
     assert {"sim_type", "eid"} <= _columns(empty_db, "sim_cards")
+
+    # 004: предпочтительный канал уведомлений у клиента.
+    assert "preferred_channel" in _columns(empty_db, "clients")
+    empty_db.execute(
+        """
+        INSERT INTO clients (type, name, phone, email)
+        VALUES ('individual', 'Тест Канал', '+79991112233', 'channel-default@example.test')
+        """
+    )
+    assert empty_db.execute(
+        "SELECT preferred_channel FROM clients WHERE email = 'channel-default@example.test'"
+    ).fetchone()[0] == "email"
 
     # Миграции создают пустую таблицу services; наполнение — сидами (Блок 4).
     assert _columns(empty_db, "services")

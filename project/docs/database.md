@@ -1,6 +1,6 @@
 # База данных
 
-Описание по `schema.sql` и миграциям `001`–`003`.
+Описание по `schema.sql` и миграциям `001`–`004`.
 
 ## Таблицы
 
@@ -11,6 +11,7 @@
 | type | `individual` / `legal` |
 | phone, email | UNIQUE |
 | status | `active`, `blocked`, `archived` |
+| preferred_channel | `email`, `sms`, `push` (default `email`, 004) |
 
 ### individual_clients / legal_clients
 - PK/FK: `client_id` → `clients.id` ON DELETE CASCADE

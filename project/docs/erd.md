@@ -20,6 +20,7 @@ erDiagram
         text email UK
         text registered_at
         text status
+        text preferred_channel
     }
 
     individual_clients {

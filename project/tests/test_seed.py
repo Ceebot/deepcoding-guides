@@ -49,3 +49,12 @@ def test_seed_contains_required_status_examples(db):
 
     assert {"available", "reserved", "active", "blocked", "lost"} <= sim_statuses
     assert {"pending", "paid", "failed", "refunded"} <= payment_statuses
+
+
+def test_seed_sets_preferred_notification_channels(db):
+    _load_seed(db)
+
+    channels = {
+        row[0] for row in db.execute("SELECT DISTINCT preferred_channel FROM clients")
+    }
+    assert channels == {"email", "sms", "push"}
