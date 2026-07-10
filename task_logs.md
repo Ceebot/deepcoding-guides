@@ -1,5 +1,9 @@
 # Task Logs
 
+## 2026-07-09
+
+- `project/Makefile`: цель `ci` (`test` + `db-audit`) как единый вход для проверок; `PYTHON` теперь сам подхватывает `.venv/bin/python`, если он есть — иначе `make test` падал с системным python3 без pytest и гейт блокировал бы любой коммит.
+
 ## 2026-07-08
 
 - Добавлен черновик `project/drafts/005_cleanup_test_payments.sql` (не входит в `migrations/`, только для локального ревью, `make db-migrate` его не подхватывает).

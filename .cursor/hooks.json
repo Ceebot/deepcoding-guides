@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "./.cursor/hooks/guard-db.sh",
+        "failClosed": true
+      }
+    ],
+    "stop": [
+      {
+        "command": "./.cursor/hooks/check-task-log.sh",
+        "loop_limit": 1
+      }
+    ]
+  }
+}

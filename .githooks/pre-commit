@@ -1,0 +1,18 @@
+#!/bin/bash
+# Гейт этапа 14. Две проверки перед каждым коммитом.
+# Включается один раз: git config core.hooksPath .githooks
+# Обход (только осознанно): git commit --no-verify
+
+# Проверка 1: из коммита не удаляют файл окружения.
+if git diff --cached --diff-filter=D --name-only | grep -q '^\.env'; then
+    echo "нельзя удалять файл окружения — коммит заблокирован"
+    exit 1
+fi
+
+# Проверка 2: тесты зелёные.
+cd "$(git rev-parse --show-toplevel)/project" || exit 1
+
+make test || {
+    echo "тесты красные — коммит заблокирован"
+    exit 1
+}
