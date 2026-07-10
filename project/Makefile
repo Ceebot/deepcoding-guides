@@ -2,7 +2,7 @@ PYTHON ?= $(shell test -x .venv/bin/python && echo .venv/bin/python || echo pyth
 DB     ?= data/telecom.db
 CLI    := scripts/manage_db.py
 
-.PHONY: db-create db-migrate db-seed db-rollback db-reset db-check db-audit test ci help
+.PHONY: db-create db-migrate db-seed db-rollback db-reset db-check db-audit test help
 
 help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -31,5 +31,3 @@ db-audit: ## Аудит целостности БД
 
 test: ## Запустить pytest
 	$(PYTHON) -m pytest
-
-ci: test db-audit ## Все проверки одним входом: код, схема, данные
