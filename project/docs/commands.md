@@ -14,6 +14,7 @@
 | `make db-reset` | удалить БД, миграции + seed |
 | `make db-check` | smoke-проверка (таблицы, seed, FK, CHECK) |
 | `make db-audit` | аудит целостности (`audit_db.py`) |
+| `make db-charge MONTH=YYYY-MM` | начислить абонплату за месяц (`manage_db.py charge`) |
 | `make test` | pytest |
 
 ## manage_db.py
@@ -22,7 +23,17 @@
 python scripts/manage_db.py --db data/telecom.db <command>
 ```
 
-Команды: `migrate`, `rollback`, `seed`, `reset`, `check`. `check` возвращает exit code 0/1.
+Команды: `migrate`, `rollback`, `seed`, `reset`, `check`, `charge`. `check` возвращает exit code 0/1.
+
+Начисление за месяц (идемпотентно, `INSERT OR IGNORE`):
+
+```bash
+make db-charge MONTH=2026-02
+# или
+python scripts/manage_db.py --db data/telecom.db charge --month 2026-02
+```
+
+Создаёт записи в `charges` для активных SIM с назначенным тарифом и датой активации до конца месяца. Повторный запуск за тот же `YYYY-MM` — `0 charge(s) created`.
 
 ## audit_db.py
 

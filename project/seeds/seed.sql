@@ -39,19 +39,40 @@ INSERT OR IGNORE INTO services (id, name, description, type, cost, billing_perio
 (7, 'Статический IP', 'Выделенный статический IP-адрес', 'static_ip', 200, 'monthly', 'active'),
 (8, 'Корпоративный VPN', 'Защищенный VPN для бизнеса', 'corporate', 1500, 'monthly', 'active');
 
-INSERT OR IGNORE INTO sim_cards
-    (id, iccid, phone_number, sim_type, eid, status, issued_at, activated_at, client_id)
+INSERT OR IGNORE INTO tariffs
+    (id, name, description, monthly_fee, status, created_at)
 VALUES
-(1, '8970100000000000001', '+79100000001', 'physical', NULL, 'active', '2026-01-01', '2026-01-10', 1),
-(2, '8970100000000000002', '+79100000002', 'esim', '89049032000000000000000000000001', 'active', '2026-01-02', '2026-01-11', 1),
-(3, '8970100000000000003', '+79100000003', 'physical', NULL, 'reserved', '2026-01-03', NULL, 2),
-(4, '8970100000000000004', '+79100000004', 'physical', NULL, 'blocked', '2026-01-04', '2026-01-12', 3),
-(5, '8970100000000000005', '+79100000005', 'physical', NULL, 'lost', '2026-01-05', '2026-01-13', 4),
-(6, '8970100000000000006', '+79100000006', 'physical', NULL, 'available', '2026-01-06', NULL, NULL),
-(7, '8970100000000000007', '+79100000007', 'physical', NULL, 'active', '2026-01-07', '2026-01-15', 6),
-(8, '8970100000000000008', '+79100000008', 'esim', '89049032000000000000000000000002', 'reserved', '2026-01-08', NULL, 7),
-(9, '8970100000000000009', '+79100000009', 'physical', NULL, 'available', '2026-01-09', NULL, NULL),
-(10, '8970100000000000010', '+79100000010', 'physical', NULL, 'active', '2026-01-10', '2026-01-18', 8);
+    (1, 'Старт', 'Базовый тариф', 500, 'active', '2026-01-01 09:00:00'),
+    (2, 'Онлайн', 'Тариф с увеличенным интернетом', 750, 'active', '2026-01-01 09:00:00'),
+    (3, 'Бизнес', 'Тариф для корпоративных клиентов', 1350, 'active', '2026-01-01 09:00:00'),
+    (4, 'Классический', 'Архивный тариф', 400, 'archived', '2026-01-01 09:00:00');
+
+INSERT OR IGNORE INTO tariff_services (tariff_id, service_id) VALUES
+    (1, 1), (1, 3),
+    (2, 2), (2, 5),
+    (3, 4), (3, 5), (3, 7), (3, 8);
+
+INSERT OR IGNORE INTO sim_cards
+    (id, iccid, phone_number, sim_type, eid, status, issued_at, activated_at, client_id, tariff_id)
+VALUES
+(1, '8970100000000000001', '+79100000001', 'physical', NULL, 'active', '2026-01-01', '2026-01-10', 1, 1),
+(2, '8970100000000000002', '+79100000002', 'esim', '89049032000000000000000000000001', 'active', '2026-01-02', '2026-01-11', 1, 2),
+(3, '8970100000000000003', '+79100000003', 'physical', NULL, 'reserved', '2026-01-03', NULL, 2, NULL),
+(4, '8970100000000000004', '+79100000004', 'physical', NULL, 'blocked', '2026-01-04', '2026-01-12', 3, NULL),
+(5, '8970100000000000005', '+79100000005', 'physical', NULL, 'lost', '2026-01-05', '2026-01-13', 4, NULL),
+(6, '8970100000000000006', '+79100000006', 'physical', NULL, 'available', '2026-01-06', NULL, NULL, NULL),
+(7, '8970100000000000007', '+79100000007', 'physical', NULL, 'active', '2026-01-07', '2026-01-15', 6, 3),
+(8, '8970100000000000008', '+79100000008', 'esim', '89049032000000000000000000000002', 'reserved', '2026-01-08', NULL, 7, NULL),
+(9, '8970100000000000009', '+79100000009', 'physical', NULL, 'available', '2026-01-09', NULL, NULL, NULL),
+(10, '8970100000000000010', '+79100000010', 'physical', NULL, 'active', '2026-01-10', '2026-01-18', 8, 1);
+
+INSERT OR IGNORE INTO charges
+    (id, sim_card_id, tariff_id, billing_period, tariff_name, amount, created_at)
+VALUES
+    (1, 1, 1, '2026-01', 'Старт', 500, '2026-01-31 23:00:00'),
+    (2, 2, 2, '2026-01', 'Онлайн', 750, '2026-01-31 23:00:00'),
+    (3, 7, 3, '2026-01', 'Бизнес', 1350, '2026-01-31 23:00:00'),
+    (4, 10, 1, '2026-01', 'Старт', 500, '2026-01-31 23:00:00');
 
 INSERT OR IGNORE INTO sim_card_services
     (id, sim_card_id, service_id, connected_at, disconnected_at, status, price_at_connection)

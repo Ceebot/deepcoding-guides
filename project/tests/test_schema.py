@@ -35,6 +35,17 @@ def insert_sim_card(
     return cursor.lastrowid
 
 
+def insert_tariff(db, name="Учебный", fee=500, status="active"):
+    cursor = db.execute(
+        """
+        INSERT INTO tariffs (name, description, monthly_fee, status)
+        VALUES (?, 'Описание тарифа', ?, ?)
+        """,
+        (name, fee, status),
+    )
+    return cursor.lastrowid
+
+
 def insert_service(db, name="Интернет"):
     cursor = db.execute(
         """
@@ -70,10 +81,13 @@ def test_schema_creates_expected_tables(db):
         "clients",
         "individual_clients",
         "legal_clients",
+        "tariffs",
         "sim_cards",
         "services",
+        "tariff_services",
         "sim_card_services",
         "payments",
+        "charges",
         "knowledge_base_articles",
         "article_services",
     }.issubset({row[0] for row in rows})
@@ -531,4 +545,104 @@ def test_check_constraints_are_enforced(db):
                 (title, slug, category, content, created_at, updated_at)
             VALUES ('Даты', 'dates', 'services', 'Описание', '2026-01-02', '2026-01-01')
             """
+        )
+
+    with pytest.raises(sqlite3.IntegrityError):
+        insert_tariff(db, name="Минус", fee=-1)
+    with pytest.raises(sqlite3.IntegrityError):
+        insert_tariff(db, name="Неизвестный", status="deprecated")
+
+
+def test_tariff_tables_and_nullable_sim_assignment(db):
+    tables = {
+        row[0]
+        for row in db.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table'"
+        )
+    }
+    assert {"tariffs", "tariff_services", "charges"} <= tables
+
+    sim_card_id = insert_sim_card(db)
+    assert db.execute(
+        "SELECT tariff_id FROM sim_cards WHERE id = ?", (sim_card_id,)
+    ).fetchone()[0] is None
+
+
+def test_archived_tariff_cannot_be_assigned_but_existing_assignment_survives(db):
+    active_id = insert_tariff(db)
+    archived_id = insert_tariff(db, name="Архивный", status="archived")
+    sim_card_id = insert_sim_card(db)
+
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute(
+            """
+            INSERT INTO sim_cards
+                (iccid, phone_number, status, tariff_id)
+            VALUES ('8970100000000000099', '+79990000099', 'active', ?)
+            """,
+            (archived_id,),
+        )
+
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute(
+            "UPDATE sim_cards SET tariff_id = ? WHERE id = ?",
+            (archived_id, sim_card_id),
+        )
+
+    db.execute(
+        "UPDATE sim_cards SET tariff_id = ? WHERE id = ?",
+        (active_id, sim_card_id),
+    )
+    db.execute("UPDATE tariffs SET status = 'archived' WHERE id = ?", (active_id,))
+    assert db.execute(
+        "SELECT tariff_id FROM sim_cards WHERE id = ?", (sim_card_id,)
+    ).fetchone()[0] == active_id
+
+
+def test_charge_is_validated_immutable_and_restricts_parent_deletion(db):
+    tariff_id = insert_tariff(db)
+    sim_card_id = insert_sim_card(db)
+    db.execute(
+        """
+        INSERT INTO charges
+            (sim_card_id, tariff_id, billing_period, tariff_name, amount)
+        VALUES (?, ?, '2026-02', 'Учебный', 500)
+        """,
+        (sim_card_id, tariff_id),
+    )
+
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute("UPDATE charges SET amount = 600")
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute("DELETE FROM charges")
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute("DELETE FROM sim_cards WHERE id = ?", (sim_card_id,))
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute("DELETE FROM tariffs WHERE id = ?", (tariff_id,))
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute(
+            """
+            INSERT INTO charges
+                (sim_card_id, tariff_id, billing_period, tariff_name, amount)
+            VALUES (?, ?, '2026-13', 'Учебный', 500)
+            """,
+            (sim_card_id, tariff_id),
+        )
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute(
+            """
+            INSERT INTO charges
+                (sim_card_id, tariff_id, billing_period, tariff_name, amount)
+            VALUES (?, ?, '2026-02', 'Учебный', 500)
+            """,
+            (sim_card_id, tariff_id),
+        )
+    with pytest.raises(sqlite3.IntegrityError):
+        db.execute(
+            """
+            INSERT INTO charges
+                (sim_card_id, tariff_id, billing_period, tariff_name, amount)
+            VALUES (?, ?, '2026-03', 'Учебный', -1)
+            """,
+            (sim_card_id, tariff_id),
         )

@@ -15,6 +15,9 @@ EXPECTED_COUNTS = {
     "payments": 8,
     "knowledge_base_articles": 5,
     "article_services": 6,
+    "tariffs": 4,
+    "tariff_services": 8,
+    "charges": 4,
 }
 
 
@@ -58,3 +61,31 @@ def test_seed_sets_preferred_notification_channels(db):
         row[0] for row in db.execute("SELECT DISTINCT preferred_channel FROM clients")
     }
     assert channels == {"email", "sms", "push"}
+
+
+def test_seed_assigns_tariffs_and_keeps_integrity_clean(db):
+    _load_seed(db)
+    active_without_tariff = db.execute(
+        """
+        SELECT COUNT(*)
+        FROM sim_cards
+        WHERE status = 'active' AND tariff_id IS NULL
+        """
+    ).fetchone()[0]
+    statuses = {
+        row[0] for row in db.execute("SELECT DISTINCT status FROM tariffs")
+    }
+    assert active_without_tariff == 0
+    assert statuses == {"active", "archived"}
+
+
+def test_seed_charges_are_snapshots_for_one_period(db):
+    _load_seed(db)
+    rows = db.execute(
+        """
+        SELECT billing_period, COUNT(*), SUM(amount)
+        FROM charges
+        GROUP BY billing_period
+        """
+    ).fetchall()
+    assert rows == [("2026-01", 4, 3100)]

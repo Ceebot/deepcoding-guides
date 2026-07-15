@@ -15,6 +15,7 @@ INTEGRITY_NAMES = [
     "payments-with-foreign-sim",
     "clients-without-type-details",
     "article-services-with-unpublished-services",
+    "active-sim-cards-without-tariff",
 ]
 AUDIT_LINE_RE = re.compile(r"\[(OK|FAIL|ERROR)\] ([^:]+): (\d+) row\(s\)")
 MUTATING_SQL_RE = re.compile(
@@ -55,7 +56,7 @@ def test_audit_passes_on_clean_seed(tmp_path):
     result = run_audit(db_path)
 
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "Summary: 5/5 checks passed" in result.stdout
+    assert "Summary: 6/6 checks passed" in result.stdout
     parsed = parse_audit_lines(result.stdout)
     assert len(parsed) == len(INTEGRITY_NAMES)
     for name in INTEGRITY_NAMES:
@@ -69,6 +70,7 @@ def test_audit_fails_on_corrupted_data(tmp_path):
     with sqlite3.connect(db_path) as conn:
         conn.execute("PRAGMA foreign_keys=ON")
         conn.execute("UPDATE sim_card_services SET status = 'disconnected' WHERE sim_card_id = 1")
+        conn.execute("UPDATE sim_cards SET tariff_id = NULL WHERE id = 1")
         conn.execute("UPDATE sim_cards SET status = 'lost' WHERE id = 2")
         conn.execute("DELETE FROM individual_clients WHERE client_id = 1")
         conn.execute("UPDATE services SET status = 'deprecated' WHERE id = 1")
@@ -86,7 +88,7 @@ def test_audit_fails_on_corrupted_data(tmp_path):
     for name in INTEGRITY_NAMES:
         assert parsed[name]["status"] == "FAIL"
         assert parsed[name]["count"] > 0
-    assert "Summary: 0/5 checks passed" in output
+    assert "Summary: 0/6 checks passed" in output
 
 
 def test_audit_fails_when_db_missing(tmp_path):

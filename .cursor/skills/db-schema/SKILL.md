@@ -2,7 +2,7 @@
 name: db-schema
 description: >
   Схема учебной БД проекта SIM-карт (project/, SQLite). Подключать при написании SQL-запросов,
-  миграций и seed-данных, чтобы агент знал таблицы, статусы и ограничения и не выдумывал поля.
+  миграций, seed-данных, тарифов и начислений, чтобы агент знал таблицы, статусы и ограничения.
 ---
 
 # DB Schema — Telecom SIM Cards (project/)
@@ -15,6 +15,7 @@ description: >
 ### clients — клиент (общая часть)
 - `type`: `individual` | `legal`
 - `status`: `active` | `blocked` | `archived`
+- `preferred_channel`: `email` | `sms` | `push`
 - `phone`, `email` — UNIQUE
 
 ### individual_clients — физлицо, 1→1 `clients`
@@ -25,20 +26,31 @@ description: >
 - `inn` UNIQUE, длина 10 или 12; `kpp` — длина 9 или NULL; `legal_address`, `contact_person`
 - триггер: `clients.type` должен быть `legal`
 
+### tariffs — тариф
+- `name` — UNIQUE; `monthly_fee >= 0`
+- `status`: `active` | `archived`
+- архивный тариф нельзя назначить новой SIM, но существующее назначение сохраняется
+
 ### sim_cards — SIM-карта
 - `iccid`, `phone_number` — UNIQUE
 - `sim_type`: `physical` | `esim`
 - `eid`: NULL или ровно 32 цифры; для `physical` `eid` обязан быть NULL
 - `status`: `available` | `reserved` | `active` | `blocked` | `lost` | `qr_generated`
 - `client_id` → `clients` (ON DELETE SET NULL)
+- `tariff_id` nullable → `tariffs` (ON DELETE SET NULL)
 - `activated_at >= issued_at`
 
-### services — услуга/тариф
+### services — услуга
 - `name` — UNIQUE
 - `type`: `internet` | `minutes` | `sms` | `roaming` | `static_ip` | `corporate`
 - `cost >= 0`
 - `billing_period`: `one_time` | `daily` | `monthly` | `yearly`
 - `status`: `active` | `deprecated` | `archived`
+
+### tariff_services — состав тарифа (M:N)
+- PK `(tariff_id, service_id)`
+- `tariff_id` → `tariffs` (CASCADE), `service_id` → `services` (RESTRICT)
+- состав услуг не определяет сумму абонплаты: начисление берёт `tariffs.monthly_fee`
 
 ### sim_card_services — подключение услуги к SIM (M:N)
 - `sim_card_id` → `sim_cards` (CASCADE), `service_id` → `services` (RESTRICT)
@@ -54,6 +66,13 @@ description: >
 - триггер: если указан `sim_card_id`, карта должна принадлежать `client_id` платежа
 - `confirmed_at >= created_at`
 
+### charges — снимок помесячного начисления
+- `sim_card_id` → `sim_cards` (RESTRICT), `tariff_id` → `tariffs` (RESTRICT)
+- `billing_period`: `YYYY-MM`, месяц `01..12`
+- снимки тарифа: `tariff_name`, `amount >= 0`
+- UNIQUE `(sim_card_id, billing_period)` — одно начисление на SIM за месяц
+- UPDATE и DELETE запрещены триггерами
+
 ### knowledge_base_articles — статья базы знаний
 - `slug` — UNIQUE; `category`; `published_status`: `draft` | `published` | `archived`
 - `updated_at >= created_at`
@@ -64,13 +83,26 @@ description: >
 ## Триггеры целостности
 - individual/legal-детали соответствуют `clients.type` и взаимоисключаются;
 - платёж по SIM возможен, только если SIM принадлежит клиенту платежа (на INSERT и UPDATE);
-- нельзя сменить владельца `sim_cards.client_id`, если по карте есть платежи другого клиента.
+- нельзя сменить владельца `sim_cards.client_id`, если по карте есть платежи другого клиента;
+- назначить SIM можно только тариф со статусом `active`;
+- строки `charges` неизменяемы.
 
 ## Полезные индексы
-- `sim_cards(client_id, status)`, `services(type, status)`, `payments(client_id, status, created_at)`;
+- `sim_cards(client_id, status)`, `sim_cards(tariff_id)`, `services(type, status)`;
+- `payments(client_id, status, created_at)`, `charges(billing_period, tariff_id)`;
+- `tariff_services(service_id)`;
 - частичный UNIQUE по `eid`; частичный UNIQUE активной связи в `sim_card_services`.
 
 ## Как использовать этот skill
 1. Перед SQL/миграцией свериться с этой картой и `project/schema.sql`.
 2. Не выдумывать поля и статусы — использовать только перечисленные значения enum/CHECK.
 3. Новые статусы/типы вводить миграцией с пересборкой таблицы (SQLite не расширяет CHECK напрямую).
+4. Для алгоритма начисления и отчёта дополнительно использовать skill `billing-flow`.
+
+## Самообновление скилла
+
+- Изменились таблицы, поля, enum, FK или CHECK в `project/schema.sql` → обновить «Таблицы и ключевые поля».
+- Изменились триггеры или индексы в `project/schema.sql` → обновить соответствующие сводки.
+- Изменилась только логика начисления в `manage_db.py` или отчётах → обновить `billing-flow`, не дублировать детали здесь.
+
+После правки сверить список таблиц, статусы, связи, триггеры и индексы с `project/schema.sql`.

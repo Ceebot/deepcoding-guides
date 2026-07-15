@@ -11,6 +11,7 @@
 | Файл | Что ищет |
 |------|----------|
 | `active-sim-cards-without-active-services.sql` | status=active без active в sim_card_services |
+| `active-sim-cards-without-tariff.sql` | status=active без назначенного тарифа (`tariff_id IS NULL`) |
 | `active-services-on-inactive-sims.sql` | active услуга на SIM ≠ active |
 | `payments-with-foreign-sim.sql` | sim_card_id не принадлежит client_id платежа |
 | `clients-without-type-details.sql` | нет строки в individual/legal по type |
@@ -20,7 +21,18 @@
 
 ## Отчёты (`queries/reports/`)
 
-### Выручка по услугам
+### Начисленная выручка по тарифам
+
+`revenue-by-tariffs.sql` — сумма из `charges` по `billing_period`, `tariff_id` и снимку `tariff_name`. Это **начисленная** абонплата, не фактически оплаченные `payments`.
+
+```bash
+cd project
+make db-reset
+make db-charge MONTH=2026-02
+sqlite3 -header -column data/telecom.db < queries/reports/revenue-by-tariffs.sql
+```
+
+### Выручка по услугам (платежи)
 
 `revenue-by-services.sql` — только `payments.status = 'paid'`. **Учебное допущение**: сумма платежа делится поровну между услугами, подключёнными к SIM на дату оплаты по интервалу `connected_at` / `disconnected_at`; `sim_card_services.status` не проверяется. В схеме нет `service_id` в платеже — это не бухгалтерская детализация. Период задаётся раскомментированием фильтра по `confirmed_at` / `created_at`.
 

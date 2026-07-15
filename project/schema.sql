@@ -36,6 +36,16 @@ CREATE TABLE legal_clients (
     CHECK (kpp IS NULL OR length(kpp) = 9)
 );
 
+CREATE TABLE tariffs (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT NOT NULL,
+    monthly_fee NUMERIC NOT NULL CHECK (monthly_fee >= 0),
+    status TEXT NOT NULL DEFAULT 'active'
+        CHECK (status IN ('active', 'archived')),
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE sim_cards (
     id INTEGER PRIMARY KEY,
     iccid TEXT NOT NULL UNIQUE,
@@ -49,6 +59,7 @@ CREATE TABLE sim_cards (
     issued_at TEXT NOT NULL DEFAULT (date('now')),
     activated_at TEXT,
     client_id INTEGER,
+    tariff_id INTEGER REFERENCES tariffs(id) ON DELETE SET NULL,
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL,
     CHECK (date(issued_at) IS NOT NULL),
     CHECK (activated_at IS NULL OR date(activated_at) IS NOT NULL),
@@ -67,6 +78,14 @@ CREATE TABLE services (
         CHECK (billing_period IN ('one_time', 'daily', 'monthly', 'yearly')),
     status TEXT NOT NULL DEFAULT 'active'
         CHECK (status IN ('active', 'deprecated', 'archived'))
+);
+
+CREATE TABLE tariff_services (
+    tariff_id INTEGER NOT NULL,
+    service_id INTEGER NOT NULL,
+    PRIMARY KEY (tariff_id, service_id),
+    FOREIGN KEY (tariff_id) REFERENCES tariffs(id) ON DELETE CASCADE,
+    FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE sim_card_services (
@@ -99,6 +118,23 @@ CREATE TABLE payments (
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE RESTRICT,
     FOREIGN KEY (sim_card_id) REFERENCES sim_cards(id) ON DELETE SET NULL,
     CHECK (confirmed_at IS NULL OR confirmed_at >= created_at)
+);
+
+CREATE TABLE charges (
+    id INTEGER PRIMARY KEY,
+    sim_card_id INTEGER NOT NULL,
+    tariff_id INTEGER NOT NULL,
+    billing_period TEXT NOT NULL
+        CHECK (
+            billing_period GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]'
+            AND substr(billing_period, 6, 2) BETWEEN '01' AND '12'
+        ),
+    tariff_name TEXT NOT NULL,
+    amount NUMERIC NOT NULL CHECK (amount >= 0),
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (sim_card_id, billing_period),
+    FOREIGN KEY (sim_card_id) REFERENCES sim_cards(id) ON DELETE RESTRICT,
+    FOREIGN KEY (tariff_id) REFERENCES tariffs(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE knowledge_base_articles (
@@ -191,15 +227,57 @@ BEGIN
     );
 END;
 
+CREATE TRIGGER trg_sim_cards_tariff_insert
+BEFORE INSERT ON sim_cards
+FOR EACH ROW
+WHEN NEW.tariff_id IS NOT NULL
+BEGIN
+    SELECT RAISE(ABORT, 'only active tariff can be assigned')
+    WHERE NOT EXISTS (
+        SELECT 1 FROM tariffs
+        WHERE id = NEW.tariff_id AND status = 'active'
+    );
+END;
+
+CREATE TRIGGER trg_sim_cards_tariff_update
+BEFORE UPDATE OF tariff_id ON sim_cards
+FOR EACH ROW
+WHEN NEW.tariff_id IS NOT NULL
+BEGIN
+    SELECT RAISE(ABORT, 'only active tariff can be assigned')
+    WHERE NOT EXISTS (
+        SELECT 1 FROM tariffs
+        WHERE id = NEW.tariff_id AND status = 'active'
+    );
+END;
+
+CREATE TRIGGER trg_charges_immutable_update
+BEFORE UPDATE ON charges
+FOR EACH ROW
+BEGIN
+    SELECT RAISE(ABORT, 'charges are immutable');
+END;
+
+CREATE TRIGGER trg_charges_immutable_delete
+BEFORE DELETE ON charges
+FOR EACH ROW
+BEGIN
+    SELECT RAISE(ABORT, 'charges are immutable');
+END;
+
 CREATE INDEX idx_clients_status ON clients(status);
 CREATE INDEX idx_sim_cards_client_status ON sim_cards(client_id, status);
+CREATE INDEX idx_sim_cards_tariff_id ON sim_cards(tariff_id);
 CREATE UNIQUE INDEX uq_sim_cards_eid ON sim_cards(eid) WHERE eid IS NOT NULL;
 CREATE INDEX idx_services_type_status ON services(type, status);
+CREATE INDEX idx_tariff_services_service_id ON tariff_services(service_id);
 CREATE UNIQUE INDEX uq_active_sim_card_service
     ON sim_card_services(sim_card_id, service_id)
     WHERE status = 'active';
 CREATE INDEX idx_sim_card_services_service_status ON sim_card_services(service_id, status);
 CREATE INDEX idx_payments_client_status_created ON payments(client_id, status, created_at);
 CREATE INDEX idx_payments_sim_card_id ON payments(sim_card_id);
+CREATE INDEX idx_charges_period_tariff
+    ON charges(billing_period, tariff_id);
 CREATE INDEX idx_articles_category_status ON knowledge_base_articles(category, published_status);
 CREATE INDEX idx_article_services_service_id ON article_services(service_id);

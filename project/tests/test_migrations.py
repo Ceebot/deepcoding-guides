@@ -10,14 +10,17 @@ sys.path.insert(0, str(PROJECT_DIR))
 from migrate import apply_migrations, MIGRATIONS_DIR  # noqa: E402
 
 EXPECTED_TABLES = {
-    "clients", "individual_clients", "legal_clients", "sim_cards", "services",
-    "sim_card_services", "payments", "knowledge_base_articles", "article_services",
+    "clients", "individual_clients", "legal_clients", "tariffs", "sim_cards", "services",
+    "tariff_services", "sim_card_services", "payments", "charges",
+    "knowledge_base_articles", "article_services",
     "migration_history",
 }
 EXPECTED_INDEXES = {
-    "idx_clients_status", "idx_sim_cards_client_status", "idx_services_type_status",
+    "idx_clients_status", "idx_sim_cards_client_status", "idx_sim_cards_tariff_id",
+    "idx_services_type_status", "idx_tariff_services_service_id",
     "uq_active_sim_card_service", "idx_sim_card_services_service_status",
     "idx_payments_client_status_created", "idx_payments_sim_card_id",
+    "idx_charges_period_tariff",
     "idx_articles_category_status", "idx_article_services_service_id",
     "uq_sim_cards_eid",
 }
@@ -59,6 +62,7 @@ def test_migrations_build_empty_db(empty_db):
         "002_add_indexes",
         "003_add_esim_support",
         "004_add_preferred_channel",
+        "005_add_tariffs_and_charges",
     ]
 
     assert EXPECTED_TABLES <= _tables(empty_db)
@@ -78,6 +82,13 @@ def test_migrations_build_empty_db(empty_db):
     assert empty_db.execute(
         "SELECT preferred_channel FROM clients WHERE email = 'channel-default@example.test'"
     ).fetchone()[0] == "email"
+
+    # 005: тарифы и начисления.
+    assert "tariff_id" in _columns(empty_db, "sim_cards")
+    assert {"id", "name", "monthly_fee", "status"} <= _columns(empty_db, "tariffs")
+    assert {
+        "sim_card_id", "tariff_id", "billing_period", "tariff_name", "amount"
+    } <= _columns(empty_db, "charges")
 
     # Миграции создают пустую таблицу services; наполнение — сидами (Блок 4).
     assert _columns(empty_db, "services")
